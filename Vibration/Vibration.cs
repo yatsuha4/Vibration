@@ -65,9 +65,14 @@ public static class Vibration
 
             unityPlayer = new AndroidJavaClass ( "com.unity3d.player.UnityPlayer" );
             currentActivity = unityPlayer.GetStatic<AndroidJavaObject> ( "currentActivity" );
-            vibrator = currentActivity.Call<AndroidJavaObject> ( "getSystemService", "vibrator" );
             context = currentActivity.Call<AndroidJavaObject> ( "getApplicationContext" );
 
+            if ( AndroidVersion >= 31 ) {
+                AndroidJavaObject vibratorManager = currentActivity.Call<AndroidJavaObject> ( "getSystemService", GetContextStatic<string> ( "VIBRATOR_MANAGER_SERVICE" ) );
+                vibrator = vibratorManager.Call<AndroidJavaObject> ( "getDefaultVibrator" );
+            } else {
+                vibrator = currentActivity.Call<AndroidJavaObject> ( "getSystemService", GetContextStatic<string> ( "VIBRATOR_SERVICE" ) );
+            }
             if ( AndroidVersion >= 26 ) {
                 vibrationEffect = new AndroidJavaClass ( "android.os.VibrationEffect" );
             }
