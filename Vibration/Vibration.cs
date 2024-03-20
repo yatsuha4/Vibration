@@ -202,8 +202,7 @@ public static class Vibration
 
 #if UNITY_ANDROID
 
-            AndroidJavaClass contextClass = new AndroidJavaClass ( "android.content.Context" );
-            string Context_VIBRATOR_SERVICE = contextClass.GetStatic<string> ( "VIBRATOR_SERVICE" );
+            string Context_VIBRATOR_SERVICE = GetContextStatic<string> ( "VIBRATOR_SERVICE" );
             AndroidJavaObject systemService = context.Call<AndroidJavaObject> ( "getSystemService", Context_VIBRATOR_SERVICE );
             if ( systemService.Call<bool> ( "hasVibrator" ) ) {
                 return true;
@@ -244,6 +243,14 @@ public static class Vibration
             return iVersionNumber;
         }
     }
+
+#if UNITY_ANDROID
+    private static TValue GetContextStatic<TValue> ( string name ) {
+        contextClass ??= new AndroidJavaClass ( "android.content.Context" );
+        return contextClass.GetStatic<TValue> ( name );
+    }
+    private static AndroidJavaClass contextClass;
+#endif
 }
 
 public enum ImpactFeedbackStyle
